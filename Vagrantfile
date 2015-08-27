@@ -1,71 +1,52 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+
 Vagrant.configure(2) do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "centos/7"
+  config.vm.box = "coreos"
+  # config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant_vmware_fusion.box"
+  config.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/745.1.0/coreos_production_vagrant_vmware_fusion.json"
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network 'forwarded_port', guest: 80, host: 8080
+  i = 1
+  config.vm.define vm_name = 'coreos-solr'
+  config.vm.hostname = vm_name
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  if $enable_serial_logging
+    logdir = File.join(File.dirname(__FILE__), "log")
+    FileUtils.mkdir_p(logdir)
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+    serialFile = File.join(logdir, "%s-serial.txt" % vm_name)
+    FileUtils.touch(serialFile)
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+    ["vmware_fusion", "vmware_workstation"].each do |vmware|
+      config.vm.provider vmware do |v, override|
+        v.vmx["serial0.present"] = "TRUE"
+        v.vmx["serial0.fileType"] = "file"
+        v.vmx["serial0.fileName"] = serialFile
+        v.vmx["serial0.tryNoRxLoss"] = "FALSE"
+      end
+    end
+  end
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
+  ip = "172.1.1.224"
+  config.vm.network :private_network, ip: ip
 
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
+  config.vm.network "forwarded_port", guest: 8790, host: 14209, auto_correct: false
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
+  config.vm.synced_folder "./", "/home/core/share/",
+                          id: "core",
+                          nfs_version: "4",
+                          :nfs => true,
+                          :mount_options => ['nolock,noatime']
+
+  config.vm.provision :shell, :inline => "docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper", :privileged => true
+  config.vm.provision :shell, :inline => "docker run --name solr1 --link zookeeper:ZK -d -p 8790:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+  config.vm.provision :shell, :inline => "docker run --name solr2 --link zookeeper:ZK -d -p 8791:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+  config.vm.provision :shell, :inline => "docker run --name solr3 --link zookeeper:ZK -d -p 8792:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+  config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
+
+
+
 end
