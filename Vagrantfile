@@ -98,13 +98,13 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      if $expose_docker_tcp
-        config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
-      end
+      # if $expose_docker_tcp
+      #   config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
+      # end
 
-      $forwarded_ports.each do |guest, host|
-        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
-      end
+      # $forwarded_ports.each do |guest, host|
+      #   config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+      # end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
         config.vm.provider vmware do |v|
@@ -141,7 +141,8 @@ Vagrant.configure("2") do |config|
       ### Solr specific stuff
       # config.vm.network "private_network", ip: "172.17.8.150"
       # config.vm.synced_folder ".", "/home/core/share", id: "core-solr", :nfs => true,  :mount_options   => ['nolock,vers=4']
-      config.vm.network "forwarded_port", guest: 8983, host: 45678, auto_correct: false
+      config.vm.network "forwarded_port", guest: 8983, host: 14712, auto_correct: false
+      config.vm.network "forwarded_port", guest: 8790, host: 14612, auto_correct: false
 
       config.vm.provision :shell, :inline => 'docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper', :privileged => true
       config.vm.provision :shell, :inline => "docker run --name solr1 --link zookeeper:ZK -d -p 8790:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
