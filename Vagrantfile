@@ -150,6 +150,7 @@ Vagrant.configure("2") do |config|
       config.vm.provision :shell, :inline => "docker run --name solr3 --link zookeeper:ZK -d -p 8792:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
       config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
 
+      # need to check https://lucidworks.com/blog/solrcloud-on-docker/
 
 
     end
