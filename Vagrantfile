@@ -14,11 +14,11 @@ $instance_name_prefix = "core"
 $update_channel = "alpha"
 $image_version = "current"
 $enable_serial_logging = false
-$share_home = false
+$share_home = true
 $vm_gui = false
-$vm_memory = 1024
-$vm_cpus = 1
-$shared_folders = {}
+$vm_memory = 4096
+$vm_cpus = 2
+$shared_folders = {'~/tmp/vagrant_tmp' => '/home/core/share/gwydyon'}
 $forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
@@ -126,11 +126,11 @@ Vagrant.configure("2") do |config|
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       $shared_folders.each_with_index do |(host_folder, guest_folder), index|
-        config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=4']
+        config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3']
       end
 
       if $share_home
-        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3']
       end
 
       if File.exist?(CLOUD_CONFIG_PATH)
@@ -141,14 +141,14 @@ Vagrant.configure("2") do |config|
       ### Solr specific stuff
       # config.vm.network "private_network", ip: "172.17.8.150"
       # config.vm.synced_folder ".", "/home/core/share", id: "core-solr", :nfs => true,  :mount_options   => ['nolock,vers=4']
-      config.vm.network "forwarded_port", guest: 8983, host: 14712, auto_correct: false
-      config.vm.network "forwarded_port", guest: 8790, host: 14612, auto_correct: false
+      config.vm.network "forwarded_port", guest: 8983, host: 8983, auto_correct: false
+      # config.vm.network "forwarded_port", guest: 8790, host: 8790, auto_correct: false
 
-      config.vm.provision :shell, :inline => 'docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper', :privileged => true
-      config.vm.provision :shell, :inline => "docker run --name solr1 --link zookeeper:ZK -d -p 8790:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
-      config.vm.provision :shell, :inline => "docker run --name solr2 --link zookeeper:ZK -d -p 8791:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
-      config.vm.provision :shell, :inline => "docker run --name solr3 --link zookeeper:ZK -d -p 8792:8790 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
-      config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
+      # config.vm.provision :shell, :inline => 'docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper', :privileged => true
+      # config.vm.provision :shell, :inline => "docker run --name solr1 --link zookeeper:ZK -d -p 8983:8983 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+      # config.vm.provision :shell, :inline => "docker run --name solr2 --link zookeeper:ZK -d -p 8984:8983 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+       # config.vm.provision :shell, :inline => "docker run --name solr3 --link zookeeper:ZK -d -p 8985:8983 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
+      # config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
 
       # need to check https://lucidworks.com/blog/solrcloud-on-docker/
 
