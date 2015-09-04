@@ -18,7 +18,7 @@ $share_home = true
 $vm_gui = false
 $vm_memory = 4096
 $vm_cpus = 2
-$shared_folders = {'~/tmp/vagrant_tmp' => '/home/core/share/gwydyon'}
+$shared_folders = {'./gwydyon' => '/home/core/share/gwydyon'}
 $forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to

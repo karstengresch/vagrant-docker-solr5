@@ -1,0 +1,7 @@
+FROM makuk66/docker-solr
+MAINTAINER Dr. Gerald Ristow <Gerald.Ristow@softwareag.com>
+
+COPY configsets.zip /opt/solr/configsets.zip
+RUN cd /opt/solr && \
+  unzip configsets.zip && \
+  rm configsets.zip
