@@ -152,6 +152,12 @@ Vagrant.configure("2") do |config|
 
       # need to check https://lucidworks.com/blog/solrcloud-on-docker/
 
+      # &&
+      # chmod +x /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
+
+      config.vm.provision :shell, :inline => "cd /home/core/share/gwydyon/ && mkdir dc && curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > /home/core/share/gwydyon/dc/docker-compose && chmod +x /home/core/share/gwydyon/dc/docker-compose", :privileged => true
+
+
 
     end
   end

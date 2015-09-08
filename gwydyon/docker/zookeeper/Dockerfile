@@ -52,4 +52,4 @@ CMD ["start-foreground"]
 # ------- ZOOKEEPER END -------
 
 # Clean up APT when done.
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
