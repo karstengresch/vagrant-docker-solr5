@@ -142,6 +142,7 @@ Vagrant.configure("2") do |config|
       # config.vm.network "private_network", ip: "172.17.8.150"
       # config.vm.synced_folder ".", "/home/core/share", id: "core-solr", :nfs => true,  :mount_options   => ['nolock,vers=4']
       config.vm.network "forwarded_port", guest: 8983, host: 8983, auto_correct: false
+      config.vm.network "forwarded_port", guest: 2181, host: 2181, auto_correct: false
       # config.vm.network "forwarded_port", guest: 8790, host: 8790, auto_correct: false
 
       # config.vm.provision :shell, :inline => 'docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper', :privileged => true
