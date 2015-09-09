@@ -20,6 +20,7 @@ $vm_memory = 4096
 $vm_cpus = 2
 $shared_folders = {'./gwydyon' => '/home/core/share/gwydyon'}
 $forwarded_ports = {}
+$expose_docker_tcp = 14632
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb.bak to override it
@@ -98,9 +99,9 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      # if $expose_docker_tcp
-      #   config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
-      # end
+      if $expose_docker_tcp
+         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
+      end
 
       # $forwarded_ports.each do |guest, host|
       #   config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
@@ -142,7 +143,11 @@ Vagrant.configure("2") do |config|
       # config.vm.network "private_network", ip: "172.17.8.150"
       # config.vm.synced_folder ".", "/home/core/share", id: "core-solr", :nfs => true,  :mount_options   => ['nolock,vers=4']
       config.vm.network "forwarded_port", guest: 8983, host: 8983, auto_correct: false
+      config.vm.network "forwarded_port", guest: 8984, host: 8984, auto_correct: false
+      config.vm.network "forwarded_port", guest: 8985, host: 8985, auto_correct: false
       config.vm.network "forwarded_port", guest: 2181, host: 2181, auto_correct: false
+      config.vm.network "forwarded_port", guest: 2888, host: 2888, auto_correct: false
+      config.vm.network "forwarded_port", guest: 3888, host: 3888, auto_correct: false
       # config.vm.network "forwarded_port", guest: 8790, host: 8790, auto_correct: false
 
       # config.vm.provision :shell, :inline => 'docker run --name zookeeper -d -p 2181:2181 -p 2888:2888 -p 3888:3888 jplock/zookeeper', :privileged => true
@@ -151,7 +156,6 @@ Vagrant.configure("2") do |config|
        # config.vm.provision :shell, :inline => "docker run --name solr3 --link zookeeper:ZK -d -p 8985:8983 makuk66/docker-solr bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'", :privileged => true
       # config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
 
-      # need to check https://lucidworks.com/blog/solrcloud-on-docker/
 
       # &&
       # chmod +x /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
