@@ -15,4 +15,5 @@ coreos>cd ../solr5 && docker build -t gwydyon/solr5 .
 coreos>cd .. && docker-compose up
 ```
 
-
+### TODO
+Connecting with the console works, but not with a Java based client.
