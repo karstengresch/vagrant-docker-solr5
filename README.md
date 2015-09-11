@@ -21,3 +21,7 @@ coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/z
 Connecting with the console works, but not with a Java based client.
 Need to fetch the IP address via 
 ```docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1```
+
+Strange problem: Connection to ZK is possible via
+.../zookeeper-3.4.6/bin/zkCli.sh -server localhost:2181
+but not using the Java client. Need to check the code.
