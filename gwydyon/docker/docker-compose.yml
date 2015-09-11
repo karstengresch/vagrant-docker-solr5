@@ -16,6 +16,8 @@ solr1:
     - "8983:8983"
   links:
     - zookeeper:ZK
+  volumes:
+   - ./solr5/configsets:/opt/gwydyon/configsets
 #  tty: true
   command: /bin/bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'
 
@@ -36,5 +38,6 @@ solr3:
     - "8985:8983"
   links:
     - zookeeper:ZK
+
 #  tty: true
   command: /bin/bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'
