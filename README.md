@@ -17,4 +17,5 @@ coreos>docker exec -i -t docker_solr1_1 /opt/solr/bin/solr create_collection -c 
 coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost 172.18.0.11:2181 -cmd upconfig -confdir /opt/gwydyon/configsets/common/conf -confname common
 ```
 
-
+### TODO
+Connecting with the console works, but not with a Java based client.
