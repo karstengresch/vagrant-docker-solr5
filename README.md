@@ -4,7 +4,7 @@
 ## Preconditions
 
 Vagrant must be installed. 
-I haven't managed it yet putting all the subsequently explained steps into a provisioning file, but at least this works fine now:
+Haven't finished yet putting all the subsequently explained steps into a provisioning file, but at least this works fine now:
 
 ```
 host> vagrant up --provider vmware_fusion
@@ -14,14 +14,14 @@ coreos>cd zookeeper && docker build -t gwydyon/zookeeper .
 coreos>cd ../solr5 && docker build -t gwydyon/solr5 .
 coreos>cd .. &&  /home/core/share/gwydyon/dc/docker-compose up
 coreos>docker exec -i -t docker_solr1_1 /opt/solr/bin/solr create_collection -c gwydyon_collection -shards 3 -replicationFactor 2 -p 8983
-coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost 172.18.0.15:2181 -cmd upconfig -confdir /opt/gwydyon/configsets/common/conf -confname common
+coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost $(docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1):2181 -cmd upconfig -confdir /opt/gwydyon/configsets/common/conf -confname common
 ```
 
 ### TODO
-Connecting with the console works, but not with a Java based client.
-Need to fetch the IP address via 
-```docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1```
+  * Connecting with the console works, but not with a Java based client.
+    Need to fetch the IP address via 
+    ```docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1```
 
-Strange problem: Connection to ZK is possible via
-.../zookeeper-3.4.6/bin/zkCli.sh -server localhost:2181
-but not using the Java client. Need to check the code.
+  * Strange problem: Connection to ZK is possible via
+    ```.../zookeeper-3.4.6/bin/zkCli.sh -server localhost:2181```
+    but not using the Java client. Need to check the code.
