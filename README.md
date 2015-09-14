@@ -9,10 +9,11 @@ Haven't finished yet putting all the subsequently explained steps into a provisi
 ```
 host> vagrant up --provider vmware_fusion
 host> vagrant ssh core-solr-01 -- -A
-coreos>cd /home/core/share/gwydyon/docker/
-coreos>cd zookeeper && docker build -t gwydyon/zookeeper .
-coreos>cd ../solr5 && docker build -t gwydyon/solr5 .
-coreos>cd .. &&  /home/core/share/gwydyon/dc/docker-compose up
+// coreos>cd /home/core/share/gwydyon/docker/
+// coreos>cd zookeeper && docker build -t gwydyon/zookeeper .
+// coreos>cd ../solr5 && docker build -t gwydyon/solr5 .
+// coreos>cd .. &&  /home/core/share/gwydyon/dc/docker-compose up
+coreos>cd /home/core/share/gwydyon/docker/ && cd zookeeper && docker build -t gwydyon/zookeeper . && cd ../solr5 && docker build -t gwydyon/solr5 . && cd .. &&  /home/core/share/gwydyon/dc/docker-compose up
 coreos>docker exec -i -t docker_solr1_1 /opt/solr/bin/solr create_collection -c gwydyon_collection -shards 3 -replicationFactor 2 -p 8983
 coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost $(docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1):2181 -cmd upconfig -confdir /opt/gwydyon/configsets/common/conf -confname common
 ```
