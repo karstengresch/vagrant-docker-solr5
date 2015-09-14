@@ -123,6 +123,7 @@ Vagrant.configure("2") do |config|
 
       #ip = "172.17.8.#{i+100}"
       #config.vm.network :private_network, ip: ip
+      # config.vm.network :private_network, ip: "192.168.1.199"
 
       Vagrant.configure("2") do |config|
         config.vm.network "public_network"
@@ -143,7 +144,7 @@ Vagrant.configure("2") do |config|
       end
 
       ### Solr specific stuff
-      # config.vm.network "private_network", ip: "172.17.8.150"
+      config.vm.network "private_network", ip: "172.17.8.150"
       # config.vm.synced_folder ".", "/home/core/share", id: "core-solr", :nfs => true,  :mount_options   => ['nolock,vers=4']
       config.vm.network "forwarded_port", guest: 8983, host: 8983, auto_correct: true
       config.vm.network "forwarded_port", guest: 8984, host: 8984, auto_correct: true

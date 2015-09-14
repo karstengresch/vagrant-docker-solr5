@@ -17,6 +17,8 @@ coreos>docker exec -i -t docker_solr1_1 /opt/solr/bin/solr create_collection -c 
 coreos>docker exec -i -t docker_solr1_1 /opt/solr/server/scripts/cloud-scripts/zkcli.sh -zkhost $(docker inspect --format='{{.NetworkSettings.IPAddress}}' docker_zookeeper_1):2181 -cmd upconfig -confdir /opt/gwydyon/configsets/common/conf -confname common
 ```
 
+Hint: For removing the Docker containers, use ```docker rm -f $(docker ps -aq)```
+
 ### TODO
   * Connecting with the console works, but not with a Java based client.
     Need to fetch the IP address via 
