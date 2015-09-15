@@ -167,6 +167,12 @@ Vagrant.configure("2") do |config|
       config.vm.provision :shell, :inline => "cd /home/core/share/gwydyon/ && mkdir dc && curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > /home/core/share/gwydyon/dc/docker-compose && chmod +x /home/core/share/gwydyon/dc/docker-compose", :privileged => true
 
 
+      # Create the Docker images using Vagrant provisioning
+      config.vm.provision "docker" do |d|
+        d.build_image "/gwydyon/docker/zookeeper"
+        d.build_image "/gwydyon/docker/solr5"
+      end
+
 
     end
   end
