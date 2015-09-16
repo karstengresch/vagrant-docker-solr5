@@ -2,7 +2,7 @@
 # Contributions: Software AG, Karsten Gresch
 
 zookeeper:
-  image: gwydyon/zookeeper
+  build: ./zookeeper
   hostname: zookeeper
   ports:
     - "2181:2181"
@@ -12,7 +12,7 @@ zookeeper:
     - ./solr5/configsets:/opt/gwydyon/configsets
 
 solr1:
-  image: gwydyon/solr5
+  build: ./solr5
   hostname: solr1
   ports:
     - "8983:8983"
@@ -24,7 +24,7 @@ solr1:
   command: /bin/bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'
 
 solr2:
-  image: gwydyon/solr5
+  build: ./solr5
   hostname: solr2
   ports:
     - "8984:8983"
@@ -34,7 +34,7 @@ solr2:
   command: /bin/bash -c '/opt/solr/bin/solr start -f -z $ZK_PORT_2181_TCP_ADDR:$ZK_PORT_2181_TCP_PORT'
 
 solr3:
-  image: gwydyon/solr5
+  build: ./solr5
   hostname: solr3
   ports:
     - "8985:8983"
