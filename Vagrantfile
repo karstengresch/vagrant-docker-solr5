@@ -173,6 +173,12 @@ Vagrant.configure("2") do |config|
         d.build_image "/gwydyon/docker/solr5"
       end
 
+      # install Build Dependencies (GOLANG)
+      config.vm.provision :shell, :privileged => false, :path => "scripts/vagrant/install-go.sh"
+
+      # Install rkt
+      config.vm.provision :shell, :privileged => false, :path => "scripts/vagrant/install-rkt.sh"
+
 
     end
   end
