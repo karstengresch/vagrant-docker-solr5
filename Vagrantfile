@@ -15,7 +15,7 @@ $update_channel = "alpha"
 $image_version = "current"
 $enable_serial_logging = false
 $share_home = true
-$vm_gui = false
+$vm_gui = true
 $vm_memory = 4096
 $vm_cpus = 2
 $shared_folders = {'./gwydyon' => '/home/core/share/gwydyon'}
@@ -128,6 +128,9 @@ Vagrant.configure("2") do |config|
       Vagrant.configure("2") do |config|
         config.vm.network "public_network"
       end
+
+      config.vm.provision :shell, :inline => "mkdir /opt && mkdir /opt/bin && curl -L https://github.com/docker/compose/releases/download/1.4.1/docker-compose-`uname -s`-`uname -m` > /opt/bin/docker-compose && chmod +x /opt/bin/docker-compose", :privileged => true
+
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       $shared_folders.each_with_index do |(host_folder, guest_folder), index|
@@ -161,8 +164,6 @@ Vagrant.configure("2") do |config|
       # config.vm.provision :shell, :inline => 'docker exec -i -t solr1 /opt/solr/bin/solr create_collection -c collection1 -shards 3 -p 8983', :privileged => true
 
 
-      # &&
-      # chmod +x /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
 
       config.vm.provision :shell, :inline => "mkdir -p /home/core/share/gwydyon/dc && curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > /home/core/share/gwydyon/dc/docker-compose && chmod +x /home/core/share/gwydyon/dc/docker-compose", :privileged => true
 
