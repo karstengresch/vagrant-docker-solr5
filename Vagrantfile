@@ -164,20 +164,22 @@ Vagrant.configure("2") do |config|
       # &&
       # chmod +x /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && docker-compose --version
 
-      config.vm.provision :shell, :inline => "cd /home/core/share/gwydyon/ && mkdir dc && curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > /home/core/share/gwydyon/dc/docker-compose && chmod +x /home/core/share/gwydyon/dc/docker-compose", :privileged => true
+      config.vm.provision :shell, :inline => "mkdir -p /home/core/share/gwydyon/dc && curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > /home/core/share/gwydyon/dc/docker-compose && chmod +x /home/core/share/gwydyon/dc/docker-compose", :privileged => true
 
 
       # Create the Docker images using Vagrant provisioning
       config.vm.provision "docker" do |d|
-        d.build_image "/gwydyon/docker/zookeeper"
-        d.build_image "/gwydyon/docker/solr5"
+        d.build_image "/home/core/share/gwydyon/docker/zookeeper"
+        d.build_image "/home/core/share/gwydyon/docker/solr5"
       end
 
+
+      # DID NOT WORK - somehow go wasn't available:
       # install Build Dependencies (GOLANG)
-      config.vm.provision :shell, :privileged => false, :path => "scripts/vagrant/install-go.sh"
+      # config.vm.provision :shell, :privileged => false, :path => "coreos_rkt/scripts/vagrant/install-go.sh"
 
       # Install rkt
-      config.vm.provision :shell, :privileged => false, :path => "scripts/vagrant/install-rkt.sh"
+      # config.vm.provision :shell, :privileged => false, :path => "coreos_rkt/scripts/vagrant/install-rkt.sh"
 
 
     end
